@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Quartz;
+using Topshelf.Logging;
 
 namespace process_runtime_monitor
 {
     public class ProcessMonitorJob : IJob
     {
         private readonly ProcessStorage storage = new ProcessStorage();
+        static readonly LogWriter logger = HostLogger.Get<ProcessMonitorJob>();
 
         public void Execute(IJobExecutionContext context)
         {
-            Console.WriteLine("Running job {0}", DateTime.Now.ToLongTimeString());
+            logger.Debug(string.Format("Running job {0}", DateTime.Now.ToLongTimeString()));
 
             if (Program.ProcessesToMonitor.Count == 0) return;
             
@@ -27,10 +29,9 @@ namespace process_runtime_monitor
         {
             if (Program.Processes.Any())
             {
-                Console.WriteLine();
-                Console.WriteLine("Currently montitored processes:");
-                Program.Processes.ForEach(p => Console.WriteLine("monitoring: {0}, started: {1}", p.Name, p.Started.ToLongTimeString()));
-                Console.WriteLine();
+                logger.Debug("Currently montitored processes:");
+                Program.Processes.ForEach(p => logger.Debug(string.Format("monitoring: {0}, started: {1}", p.Name, p.Started.ToLongTimeString())));
+                logger.Debug(string.Empty);
             }
         }
 
@@ -46,7 +47,7 @@ namespace process_runtime_monitor
 
             if (!newlystartedProcesses.Any()) return;
 
-            Console.WriteLine("Found newly started processes: {0}", string.Join(", ", newlystartedProcesses.Select(p => p.Name)));
+            logger.Debug(string.Format("Found newly started processes: {0}", string.Join(", ", newlystartedProcesses.Select(p => p.Name))));
             Program.Processes.AddRange(newlystartedProcesses);
         }
 
@@ -62,7 +63,7 @@ namespace process_runtime_monitor
 
             if (!newlyStoppedProcesses.Any()) return;
 
-            Console.WriteLine("Found newly stopped processes: {0}", string.Join(", ", newlyStoppedProcesses.Select(p => p.Name)));
+            logger.Debug(string.Format("Found newly stopped processes: {0}", string.Join(", ", newlyStoppedProcesses.Select(p => p.Name))));
             newlyStoppedProcesses.ToList().ForEach(SaveProcessAndRemoveFromStaticList);
         }
 

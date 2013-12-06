@@ -21,8 +21,6 @@ namespace process_runtime_monitor
 
         public void SaveOrUpdateProcess(RunningProcess process)
         {
-            //convert to ProcessTableEntity
-            //get from stoage if already exists
             var processFromStorage = (ProcessTableEntity)processesTable.Execute(TableOperation.Retrieve<ProcessTableEntity>(process.Name, process.Started.Date.ToString(rowKeyDateFormat))).Result;
             if (processFromStorage == null)
                 SaveNewProcess(process);
