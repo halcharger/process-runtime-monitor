@@ -8,6 +8,8 @@ namespace process_runtime_monitor
 {
     public class ProcessMonitorJob : IJob
     {
+        private readonly ProcessStorage storage = new ProcessStorage();
+
         public void Execute(IJobExecutionContext context)
         {
             Console.WriteLine("Running job {0}", DateTime.Now.ToLongTimeString());
@@ -61,7 +63,14 @@ namespace process_runtime_monitor
             if (!newlyStoppedProcesses.Any()) return;
 
             Console.WriteLine("Found newly stopped processes: {0}", string.Join(", ", newlyStoppedProcesses.Select(p => p.Name)));
-            newlyStoppedProcesses.ToList().ForEach(p => Program.Processes.Remove(p));
+            newlyStoppedProcesses.ToList().ForEach(SaveProcessAndRemoveFromStaticList);
+        }
+
+        private void SaveProcessAndRemoveFromStaticList(RunningProcess p)
+        {
+            p.Stopped = DateTime.Now;
+            Program.Processes.Remove(p);
+            storage.SaveOrUpdateProcess(p);
         }
     }
 }
