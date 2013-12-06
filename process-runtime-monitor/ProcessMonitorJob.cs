@@ -18,8 +18,18 @@ namespace process_runtime_monitor
             UpdateStoppedProcesses(runningProcesses);
             UpdateStartedProcesses(runningProcesses);
 
-            //foreach (var runningProcess in runningProcesses)
-            //    Console.WriteLine("Found running process: {0} [{1}] at {2}", runningProcess.Name, runningProcess.PID, DateTime.Now.ToLongTimeString());
+            PrintOutCurrentlyMonitoredProcesses();
+        }
+
+        private void PrintOutCurrentlyMonitoredProcesses()
+        {
+            if (Program.Processes.Any())
+            {
+                Console.WriteLine();
+                Console.WriteLine("Currently montitored processes:");
+                Program.Processes.ForEach(p => Console.WriteLine("monitoring: {0}, started: {1}", p.Name, p.Started.ToLongTimeString()));
+                Console.WriteLine();
+            }
         }
 
         private void UpdateStartedProcesses(IEnumerable<RunningProcess> runningProcesses)
