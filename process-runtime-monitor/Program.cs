@@ -7,9 +7,9 @@ using Topshelf.Quartz;
 
 namespace process_runtime_monitor
 {
-    class Program
+    public class Program
     {
-        public static List<Process> Processes = new List<Process>();
+        public static List<RunningProcess> Processes = new List<RunningProcess>();
         public static List<string> ProcessesToMonitor = new List<string>();
 
         static void Main(string[] args)
@@ -29,7 +29,7 @@ namespace process_runtime_monitor
             {
                 c.ScheduleQuartzJobAsService(q => q.WithJob(() => JobBuilder.Create<ProcessMonitorJob>().Build())
                     .AddTrigger(() => TriggerBuilder.Create()
-                        .WithSimpleSchedule(builder => builder.WithIntervalInSeconds(10).RepeatForever())
+                        .WithSimpleSchedule(builder => builder.WithIntervalInSeconds(30).RepeatForever())
                         .Build()));
 
             });
