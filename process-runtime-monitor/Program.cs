@@ -29,7 +29,7 @@ namespace process_runtime_monitor
             {
                 c.ScheduleQuartzJobAsService(q => q.WithJob(() => JobBuilder.Create<ProcessMonitorJob>().Build())
                     .AddTrigger(() => TriggerBuilder.Create()
-                        .WithSimpleSchedule(builder => builder.WithIntervalInSeconds(30).RepeatForever())
+                        .WithSimpleSchedule(builder => builder.WithIntervalInSeconds(5).RepeatForever())
                         .Build()));
 
             });
