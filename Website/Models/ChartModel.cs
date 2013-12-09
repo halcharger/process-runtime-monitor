@@ -10,6 +10,6 @@
     {
         public string fillColor { get; set; }
         public string strokeColor { get; set; }
-        public decimal[] data { get; set; }
+        public double[] data { get; set; }
     }
 }

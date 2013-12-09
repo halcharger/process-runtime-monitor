@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Topshelf.Logging;
@@ -60,6 +62,13 @@ namespace process_runtime_monitor
             {
                 logger.Error(e);
             }
+        }
+
+        public IEnumerable<ProcessTableEntity> GetProcessesFor(string processName, DateTime start, DateTime end)
+        {
+            var dateRange = Enumerable.Range(0, end.Subtract(start).Days +1).Select(d => start.AddDays(d)).ToArray();
+            var retrieveOperations = dateRange.Select(d => TableOperation.Retrieve<ProcessTableEntity>(processName, d.ToString(rowKeyDateFormat)));
+            return retrieveOperations.Select(op => (ProcessTableEntity)processesTable.Execute(op).Result).Where(r => r != null);
         }
     }
 }
