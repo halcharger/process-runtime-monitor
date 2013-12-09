@@ -13,10 +13,12 @@
                 .done(function (data) {
                     // On success, 'data' contains chart data.
                     var options = {
+                        scaleOverlay : true, 
                         scaleOverride: true,
                         scaleSteps: (Math.max.apply(Math, data.datasets[0].data) + 10)/10,
                         scaleStepWidth: 10,
                         scaleStartValue: 0,
+                        scaleShowGridLines : true, 
                     };
                     new Chart(document.getElementById("canvas").getContext("2d")).Bar(data, options);
                     $('#json').html(JSON.stringify(data));
