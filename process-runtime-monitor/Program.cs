@@ -27,7 +27,8 @@ namespace process_runtime_monitor
         {
             HostFactory.Run(c =>
             {
-                c.UseLog4Net("log4net.config");
+                c.UseLog4Net();
+                log4net.Config.XmlConfigurator.Configure();
 
                 c.ScheduleQuartzJobAsService(q => q.WithJob(() => JobBuilder.Create<ProcessMonitorJob>().Build())
                     .AddTrigger(() => TriggerBuilder.Create()

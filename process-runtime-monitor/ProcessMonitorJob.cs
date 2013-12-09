@@ -14,7 +14,7 @@ namespace process_runtime_monitor
 
         public void Execute(IJobExecutionContext context)
         {
-            logger.Debug(string.Format("Running job {0}", DateTime.Now.ToLongTimeString()));
+            logger.DebugFormat("Running job {0}", DateTime.Now.ToLongTimeString());
 
             if (Program.ProcessesToMonitor.Count == 0) return;
             
@@ -29,9 +29,8 @@ namespace process_runtime_monitor
         {
             if (Program.Processes.Any())
             {
-                logger.Debug("Currently montitored processes:");
-                Program.Processes.ForEach(p => logger.Debug(string.Format("monitoring: {0}, started: {1}", p.Name, p.Started.ToLongTimeString())));
-                logger.Debug(string.Empty);
+                logger.Info("Currently montitored processes:");
+                Program.Processes.ForEach(p => logger.InfoFormat("monitoring: {0}, started: {1}", p.Name, p.Started.ToLongTimeString()));
             }
         }
 
@@ -47,7 +46,7 @@ namespace process_runtime_monitor
 
             if (!newlystartedProcesses.Any()) return;
 
-            logger.Debug(string.Format("Found newly started processes: {0}", string.Join(", ", newlystartedProcesses.Select(p => p.Name))));
+            logger.InfoFormat("Found newly started processes: {0}", string.Join(", ", newlystartedProcesses.Select(p => p.Name)));
             Program.Processes.AddRange(newlystartedProcesses);
         }
 
@@ -63,7 +62,7 @@ namespace process_runtime_monitor
 
             if (!newlyStoppedProcesses.Any()) return;
 
-            logger.Debug(string.Format("Found newly stopped processes: {0}", string.Join(", ", newlyStoppedProcesses.Select(p => p.Name))));
+            logger.InfoFormat("Found newly stopped processes: {0}", string.Join(", ", newlyStoppedProcesses.Select(p => p.Name)));
             newlyStoppedProcesses.ToList().ForEach(SaveProcessAndRemoveFromStaticList);
         }
 

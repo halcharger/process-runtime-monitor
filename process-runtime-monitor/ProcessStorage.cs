@@ -2,6 +2,7 @@
 using System.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using Topshelf.Logging;
 
 namespace process_runtime_monitor
 {
@@ -9,6 +10,7 @@ namespace process_runtime_monitor
     {
         private readonly CloudTable processesTable;
         private const string rowKeyDateFormat = "yyyyMMdd";
+        static readonly LogWriter logger = HostLogger.Get<ProcessStorage>();
 
         public ProcessStorage()
         {
@@ -37,7 +39,7 @@ namespace process_runtime_monitor
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception encountered: {0}", e);
+                logger.Error(e);
             }
         }
 
@@ -56,7 +58,7 @@ namespace process_runtime_monitor
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception encountered: {0}", e);
+                logger.Error(e);
             }
         }
     }
