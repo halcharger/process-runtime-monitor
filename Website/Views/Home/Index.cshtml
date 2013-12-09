@@ -1,22 +1,19 @@
 ﻿<div class="row">
     <script src="Scripts\Chart.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <p></p>
     <canvas id="canvas" height="450" width="600"></canvas>
-
-
+    
     <script>
+        var uri = 'api/chartdata';
 
-        var barChartData = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [
-                {
-                    fillColor: "rgba(151,187,205,0.5)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    data: [28, 48, 40, 19, 96, 27, 100]
-                }
-            ]
-        };
-
-        var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Bar(barChartData);
-
+        $(document).ready(function () {
+            // Send an AJAX request
+            $.getJSON(uri)
+                .done(function (data) {
+                    // On success, 'data' contains chart data.
+                    new Chart(document.getElementById("canvas").getContext("2d")).Bar(data);
+                });
+        });
     </script>
 </div>
