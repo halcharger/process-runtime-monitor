@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -7,6 +8,7 @@ namespace process_runtime_monitor
     public class ProcessTableEntity : TableEntity
     {
         private const string timeFormat = "HH:mm";
+        public const string RowKeyDateFormat = "yyyyMMdd";
 
         public string TimesRun { get; set; }
         public double TotalMinutesRun { get; set; }
@@ -33,9 +35,15 @@ namespace process_runtime_monitor
         private TimeSpan GetTimeSpanFromTimeSlot(string timeSlot)
         {
             var times = timeSlot.Split('|');
-            var from = DateTime.ParseExact(times[0], timeFormat, System.Globalization.CultureInfo.CurrentCulture);
-            var to = DateTime.ParseExact(times[1], timeFormat, System.Globalization.CultureInfo.CurrentCulture);
+            var from = DateTime.ParseExact(times[0], timeFormat, CultureInfo.CurrentCulture);
+            var to = DateTime.ParseExact(times[1], timeFormat, CultureInfo.CurrentCulture);
             return to.Subtract(from);
+        }
+
+        public string FriendlyRowKeyDate()
+        {
+            var date = DateTime.ParseExact(RowKey, RowKeyDateFormat, CultureInfo.CurrentCulture);
+            return date.ToString("dd MMM yyyy");
         }
     }
 }

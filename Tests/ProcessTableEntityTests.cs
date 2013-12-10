@@ -50,5 +50,12 @@ namespace Tests
             p.AddRunTimes(TenFifty, TenFiftyFive);
             p.TimesRun.Should().Be("10:30|10:32;10:50|10:55");
         }
+
+        [Test]
+        public void RowKeyIsCorrectylConvertedToFriendlyDateFormat()
+        {
+            var p = new ProcessTableEntity {RowKey = "20131231"};
+            p.FriendlyRowKeyDate().Should().Be("31 Dec 2013");
+        }
     }
 }

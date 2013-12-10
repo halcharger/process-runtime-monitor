@@ -11,7 +11,6 @@ namespace process_runtime_monitor
     public class ProcessStorage
     {
         private readonly CloudTable processesTable;
-        private const string rowKeyDateFormat = "yyyyMMdd";
         static readonly LogWriter logger = HostLogger.Get<ProcessStorage>();
 
         public ProcessStorage()
@@ -25,7 +24,7 @@ namespace process_runtime_monitor
 
         public void SaveOrUpdateProcess(RunningProcess process)
         {
-            var processFromStorage = (ProcessTableEntity)processesTable.Execute(TableOperation.Retrieve<ProcessTableEntity>(process.Name, process.Started.Date.ToString(rowKeyDateFormat))).Result;
+            var processFromStorage = (ProcessTableEntity)processesTable.Execute(TableOperation.Retrieve<ProcessTableEntity>(process.Name, process.Started.Date.ToString(ProcessTableEntity.RowKeyDateFormat))).Result;
             if (processFromStorage == null)
                 SaveNewProcess(process);
             else
@@ -50,7 +49,7 @@ namespace process_runtime_monitor
             var processToInsert = new ProcessTableEntity
             {
                 PartitionKey = p.Name,
-                RowKey = p.Started.Date.ToString(rowKeyDateFormat)
+                RowKey = p.Started.Date.ToString(ProcessTableEntity.RowKeyDateFormat)
             };
 
             try
@@ -67,7 +66,7 @@ namespace process_runtime_monitor
         public IEnumerable<ProcessTableEntity> GetProcessesFor(string processName, DateTime start, DateTime end)
         {
             var dateRange = Enumerable.Range(0, end.Subtract(start).Days +1).Select(d => start.AddDays(d)).ToArray();
-            var retrieveOperations = dateRange.Select(d => TableOperation.Retrieve<ProcessTableEntity>(processName, d.ToString(rowKeyDateFormat)));
+            var retrieveOperations = dateRange.Select(d => TableOperation.Retrieve<ProcessTableEntity>(processName, d.ToString(ProcessTableEntity.RowKeyDateFormat)));
             return retrieveOperations.Select(op => (ProcessTableEntity)processesTable.Execute(op).Result).Where(r => r != null);
         }
     }

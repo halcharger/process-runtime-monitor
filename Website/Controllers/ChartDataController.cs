@@ -15,7 +15,7 @@ namespace Website.Controllers
 
             return new ChartModel
             {
-                labels = data.Select(d => d.RowKey).ToArray(), 
+                labels = data.Select(d => d.FriendlyRowKeyDate()).ToArray(), 
                 datasets = new []{new Dataset
                 {
                     fillColor = "rgba(151,187,205,0.5)",
