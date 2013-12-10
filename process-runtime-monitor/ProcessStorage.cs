@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -65,9 +66,29 @@ namespace process_runtime_monitor
 
         public IEnumerable<ProcessTableEntity> GetProcessesFor(string processName, DateTime start, DateTime end)
         {
-            var dateRange = Enumerable.Range(0, end.Subtract(start).Days +1).Select(d => start.AddDays(d)).ToArray();
-            var retrieveOperations = dateRange.Select(d => TableOperation.Retrieve<ProcessTableEntity>(processName, d.ToString(ProcessTableEntity.RowKeyDateFormat)));
-            return retrieveOperations.Select(op => (ProcessTableEntity)processesTable.Execute(op).Result).Where(r => r != null);
+            var rowKeyRange = Enumerable.Range(0, end.Subtract(start).Days +1).Select(d => start.AddDays(d)).Select(d => d.ToString(ProcessTableEntity.RowKeyDateFormat)).ToArray();
+            var records = processesTable.ExecuteQuery(GetTableQueryFor(processName, start, end));
+            return from rk in rowKeyRange
+                   join r in records
+                   on rk equals r.RowKey into joinedData
+                   from r in joinedData.DefaultIfEmpty()
+                   select r ?? new ProcessTableEntity {RowKey = rk};
+        }
+
+        private TableQuery<ProcessTableEntity> GetTableQueryFor(string processName, DateTime start, DateTime end)
+        {
+            return
+                new TableQuery<ProcessTableEntity>().Where(
+                    TableQuery.CombineFilters(
+                        TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, processName),
+                        TableOperators.And,
+                        TableQuery.CombineFilters(
+                            TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, start.ToString(ProcessTableEntity.RowKeyDateFormat)),
+                            TableOperators.And, 
+                            TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThanOrEqual, end.ToString(ProcessTableEntity.RowKeyDateFormat))
+                            )
+                        )
+                    );
         }
     }
 }
