@@ -11,7 +11,7 @@ namespace Website.Controllers
         // GET api/<controller>
         public ChartModel Get()
         {
-            var data = new ProcessStorage().GetProcessesFor("Boom", DateTime.Now.AddDays(-14).Date, DateTime.Now.Date);
+            var data = new ProcessStorage().GetProcessesFor("bf4", DateTime.Now.AddDays(-14).Date, DateTime.Now.Date);
 
             return new ChartModel
             {
